@@ -1,0 +1,6 @@
+ANIclustermap -i /Users/samanthatucker/Library/CloudStorage/OneDrive-UniversityofGlasgow/Giusy_SamTucker-Project/Prophage/Caudoviricetes -o /Users/samanthatucker/Library/CloudStorage/OneDrive-UniversityofGlasgow/Giusy_SamTucker-Project/Prophage/Caudoviricetes/ANIclustermaps --fig_width 20 --fig_height 25 --cmap_colors #FCC5C0,#FA9FB5,#AE017E
+
+nano fastani-to-clusters-py 
+#Then copy and paste in Dr Giusy Mariano's fastani-to-clusters.py script from Github
+
+python fastani-to-clusters.py ANIclustermap_matrix.tsv 95 shiga_prophage_clusters.tsv
