@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# Define file paths
+txt_file="Table5_Stx_prophage.txt"
+fasta_dir="."  # Directory containing .fasta files
+output_dir="matched_fasta"
+
+# Create output folder if it doesn't exist
+mkdir -p "$output_dir"
+
+# Extract seqid values from the first column (skip header)
+tail -n +2 "$txt_file" | cut -f1 | tr -d '\r' | while read -r seqid; do
+    # Loop through all .fasta files
+    for fasta_file in "$fasta_dir"/*.fasta; do
+        if grep -qw "$seqid" "$fasta_file"; then
+            cp "$fasta_file" "$output_dir/"
+            echo "Copied: $fasta_file (matched $seqid)"
+            break
+        fi
+    done
+done
+
+echo "Done. Matching .fasta files copied to $output_dir"
+
