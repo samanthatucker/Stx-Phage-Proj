@@ -1,0 +1,33 @@
+#This script extracts the summary_results.tsv from the TaxMyPhage output that is stored in seperate subdirectories named after each input
+#!/bin/bash
+
+# Set the base directory (change this to your target directory if needed)
+BASE_DIR="."
+
+# Set the output file
+OUTPUT_FILE="summary_results.tsv"
+
+# Clear the output file if it already exists
+> "$OUTPUT_FILE"
+
+# Find and concatenate all .tsv files
+find "$BASE_DIR" -type f -name "Output_of_taxonomy.tsv" -exec cat {} + >> "$OUTPUT_FILE"
+
+echo "All Output_of_taxonomy.tsv files have been concatenated into $OUTPUT_FILE."
+
+#This script extracts the similarity_results.tsv from the TaxMyPhage output that is stored in seperate subdirectories named after each input
+#!/bin/bash
+
+# Set the base directory (change this to your target directory if needed)
+BASE_DIR="."
+
+# Set the output file
+OUTPUT_FILE="similarity_results.tsv"
+
+# Clear the output file if it already exists
+> "$OUTPUT_FILE"
+
+# Find and concatenate all .tsv files
+find "$BASE_DIR" -type f -name "similarities.tsv" -exec cat {} + >> "$OUTPUT_FILE"
+
+echo "All similarities.tsv files have been concatenated into $OUTPUT_FILE."
