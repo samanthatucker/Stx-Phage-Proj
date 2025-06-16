@@ -1,54 +1,61 @@
 import pandas as pd
-import networkx as nx
+import os
 import seaborn as sns
-
-# Load similarity matrix
-file_path = "proteome_similarity_matrix.tsv"
-df = pd.read_csv(file_path, sep='\t', index_col=0)
-
-# Define similarity threshold
-similarity_threshold = 0.8  # Change this as needed
-
-# Build graph: connect nodes with similarity >= threshold (excluding self-links)
-G = nx.Graph()
-seqids = df.index.tolist()
-G.add_nodes_from(seqids)
-
-for i in range(len(seqids)):
-    for j in range(i + 1, len(seqids)):
-        sim = df.iloc[i, j]
-        if sim >= similarity_threshold:
-            G.add_edge(seqids[i], seqids[j])
-
-# Find connected components as clusters
-components = list(nx.connected_components(G))
-seqid_to_cluster = {
-    seqid: cluster_id
-    for cluster_id, component in enumerate(components)
-    for seqid in component
-}
-
-# Create DataFrame with cluster assignments
-cluster_df = pd.DataFrame({
-    'seqid': df.index,
-    'cluster': [seqid_to_cluster.get(seqid, -1) for seqid in df.index]  # -1 for unconnected nodes
-})
-
-# Save to CSV
-cluster_df.to_csv("seqid_clusters_by_threshold0.8.csv", index=False)
-print(cluster_df.sort_values(by='cluster'))
-print("Saved to seqid_clusters_by_threshold0.8.csv")
-
 import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib.colors import LogNorm,PowerNorm
 
-# Reorder the DataFrame based on cluster assignments
-sorted_seqids = cluster_df.sort_values(by='cluster')['seqid'].tolist()
-df_sorted = df.loc[sorted_seqids, sorted_seqids]
+df = pd.read_csv('combined.filtered_output.csv')
 
-# Create a heatmap
-plt.figure(figsize=(12, 10))
-sns.heatmap(df_sorted, cmap='viridis', xticklabels=True, yticklabels=True)
-plt.title(f"Clustered Similarity Heatmap (threshold ≥ {similarity_threshold})")
+df.head()
+
+# Create the presence-absence matrix
+presence_absence_matrix = pd.crosstab(df['source'], df['system'])
+
+# Convert values >0 to 1 (indicating presence)
+presence_absence_matrix = (presence_absence_matrix > 0).astype(int)
+
+# Set the figure size
+plt.figure(figsize=(220, 120))  # Adjust dimensions as needed
+
+plt.figure(figsize=(len(presence_absence_matrix.columns) * 0.3, 10)) 
+presence_absence_heatmap =sns.heatmap(presence_absence_matrix,cmap='crest',cbar=True, linewidths=0.5, linecolor='black')
+
+# Add labels and title
+plt.xlabel('Defence System')
+plt.ylabel('Sequence ID')
+
+# Display the heatmap
 plt.tight_layout()
-plt.savefig("clustered_similarity_heatmap0.8.png", dpi=300)
+plt.savefig('presence_absence_heatmap2.png', dpi =600,bbox_inches='tight')
 plt.show()
+
+# Optional: Save the matrix to a new CSV file
+presence_absence_matrix.to_csv('all.presence_absence_matrix.csv')
+
+df = pd.read_csv('stx.combined.filtered_output.csv')
+df.head()
+
+# Create the presence-absence matrix
+presence_absence_matrix = pd.crosstab(df['source'], df['system'])
+
+# Convert values >0 to 1 (indicating presence)
+presence_absence_matrix = (presence_absence_matrix > 0).astype(int)
+
+# Set the figure size
+plt.figure(figsize=(220, 120))  # Adjust dimensions as needed
+
+plt.figure(figsize=(len(presence_absence_matrix.columns) * 0.3, 10)) 
+presence_absence_heatmap =sns.heatmap(presence_absence_matrix,cmap='crest',cbar=True, linewidths=0.5, linecolor='black')
+
+# Add labels and title
+plt.xlabel('Defence System')
+plt.ylabel('Sequence ID')
+
+# Display the heatmap
+plt.tight_layout()
+plt.savefig('stx.presence_absence_heatmap.png', dpi =600,bbox_inches='tight')
+plt.show()
+
+# Optional: Save the matrix to a new CSV file
+presence_absence_matrix.to_csv('stx.presence_absence_matrix.csv')
