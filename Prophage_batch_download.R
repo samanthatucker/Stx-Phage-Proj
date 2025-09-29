@@ -1,7 +1,7 @@
 r
 
 #Utilising Entrez to pull the information from ncbi
-setwd("/Users/samanthatucker/Library/CloudStorage/OneDrive-UniversityofGlasgow/Giusy_SamTucker-Project/Prophage")
+setwd("")
 library(readr)
 require(rentrez)
 entrez_email <- ""
