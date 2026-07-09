@@ -56,8 +56,8 @@ def _cli_args():
 
 def main():
     args = _cli_args()
-    input_path = args[0] if len(args) > 0 else "/Users/samanthatucker/Library/CloudStorage/OneDrive-UniversityofGlasgow/Giusy_SamTucker-Project/Duplodnaviria/seqid_clusters_by_threshold0.5.csv"
-    output_path = args[1] if len(args) > 1 else "/Users/samanthatucker/Library/CloudStorage/OneDrive-UniversityofGlasgow/Giusy_SamTucker-Project/Duplodnaviria/Duplodno-representatives50.csv"
+    input_path = args[0] if len(args) > 0 else "Duplodnaviria/seqid_clusters_by_threshold0.5.csv"
+    output_path = args[1] if len(args) > 1 else "Duplodnaviria/Duplodno-representatives50.csv"
 
     n = select_representatives(input_path, output_path)
     print(f"Wrote {n} representatives (one per cluster) to {output_path}")
