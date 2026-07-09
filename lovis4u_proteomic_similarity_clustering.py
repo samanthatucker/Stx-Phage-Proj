@@ -52,3 +52,52 @@ plt.title(f"Clustered Similarity Heatmap (threshold ≥ {similarity_threshold})"
 plt.tight_layout()
 plt.savefig("clustered_similarity_heatmap0.8.png", dpi=300)
 plt.show()
+
+# Statistics
+import pandas as pd
+import numpy as np
+from sklearn.metrics import adjusted_rand_score
+from itertools import combinations
+
+# ---------------------------------------------------------------------------
+# Load clustering outputs
+# ---------------------------------------------------------------------------
+
+cluster_50 = pd.read_csv("representatives50.txt")
+cluster_62 = pd.read_csv("representatives62.txt")
+cluster_80 = pd.read_csv("representatives80.txt")
+
+clusterings = {
+    "50%": cluster_50,
+    "62%": cluster_62,
+    "80%": cluster_80
+}
+
+# ---------------------------------------------------------------------------
+# Basic cluster statistics
+# ---------------------------------------------------------------------------
+
+summary_stats = []
+
+for threshold, df in clusterings.items():
+
+    cluster_sizes = df.groupby("cluster").size()
+
+    summary_stats.append({
+        "Threshold": threshold,
+        "Number_of_clusters": cluster_sizes.shape[0],
+        "Largest_cluster": cluster_sizes.max(),
+        "Mean_cluster_size": round(cluster_sizes.mean(), 2),
+        "Median_cluster_size": round(cluster_sizes.median(), 2),
+        "Singleton_clusters": sum(cluster_sizes == 1)
+    })
+
+summary_df = pd.DataFrame(summary_stats)
+
+print("\n===== CLUSTER SUMMARY =====")
+print(summary_df)
+
+summary_df.to_csv(
+    "cluster_sensitivity_summary.csv",
+    index=False
+)
