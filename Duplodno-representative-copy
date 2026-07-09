@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+#
+# Copy the .fna file for each representative seqid into a new folder.
+#
+# Reads seqids from a representatives CSV (columns: seqid,cluster), then copies
+# <seqid>.fna from SRC to DEST. Reports how many were copied and lists any
+# seqids whose .fna file was not found.
+#
+# Usage:
+#   ./copy_representative_faa.sh [representatives.csv]
+#
+# Edit the three paths below if your locations differ.
+
+set -euo pipefail
+
+# ---- Configuration -------------------------------------------------------
+CSV="${1:-Duplodno-representatives50.csv}"
+SRC=""
+DEST="Duplodnaviria/representative-sequences"
+# -------------------------------------------------------------------------
+
+# Sanity checks
+if [[ ! -f "$CSV" ]]; then
+    echo "ERROR: CSV not found: $CSV" >&2
+    exit 1
+fi
+if [[ ! -d "$SRC" ]]; then
+    echo "ERROR: source folder not found: $SRC" >&2
+    exit 1
+fi
+
+# Create the destination folder (no error if it already exists)
+mkdir -p "$DEST"
+
+copied=0
+missing=0
+missing_ids=()
+
+# Read the CSV, skipping the header line. Take the first comma-separated
+# field (seqid). Strip any trailing carriage return from Windows line endings.
+while IFS=, read -r seqid _rest; do
+    seqid="${seqid%$'\r'}"
+    [[ -z "$seqid" ]] && continue
+
+    src_file="$SRC/$seqid.fna"
+    if [[ -f "$src_file" ]]; then
+        cp "$src_file" "$DEST/"
+        copied=$((copied + 1))
+    else
+        missing=$((missing + 1))
+        missing_ids+=("$seqid")
+    fi
+done < <(tail -n +2 "$CSV")
+
+# Summary
+echo "Copied  : $copied .fna files -> $DEST"
+echo "Missing : $missing seqids had no matching .fna in $SRC"
+if (( missing > 0 )); then
+    printf '  - %s\n' "${missing_ids[@]}"
+fi
